@@ -1,0 +1,33 @@
+[00:00:01.331] Server  LOG     ✓ Ready in 1130ms
+[00:00:07.394] Server  ERROR   ⨯ "upstream image response failed for" "https://images.unsplash.com/photo-1543204735-8913988f7b51?w=800&q=80" 404
+[00:00:07.672] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:17.570] Server  WARN    ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[00:00:18.081] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:19.298] Server  ERROR   ⨯ "upstream image response failed for" "https://images.unsplash.com/photo-1543204735-8913988f7b51?w=800&q=80" 404
+[00:00:25.311] Server  ERROR   (node:49445) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+[00:00:25.728] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:25.854] Browser WARN    Image with src "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&q=80" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[00:00:26.274] Server  ERROR   ⨯ "upstream image response failed for" "https://images.unsplash.com/photo-1543204735-8913988f7b51?w=800&q=80" 404
+[00:00:26.679] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:26.793] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:42.853] Server  ERROR   ⨯ "upstream image response failed for" "https://images.unsplash.com/photo-1543204735-8913988f7b51?w=800&q=80" 404
+[00:00:42.861] Server  ERROR   ⨯ "upstream image response failed for" "https://images.unsplash.com/photo-1566958763321-729938029052?w=800&q=80" 404
+[00:00:52.721] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:53.219] Server  ERROR   ⨯ "upstream image response failed for" "https://images.unsplash.com/photo-1543204735-8913988f7b51?w=800&q=80" 404
+[00:00:53.506] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:01:33.920] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:01:34.328] Server  ERROR   ⨯ "upstream image response failed for" "https://images.unsplash.com/photo-1543204735-8913988f7b51?w=800&q=80" 404
+[00:01:34.629] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:01:37.130] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:01:50.160] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:02:12.409] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:02:19.106] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:02:22.176] Server  ERROR   ⨯ "upstream image response failed for" "https://images.unsplash.com/photo-1543204735-8913988f7b51?w=800&q=80" 404
+[00:02:22.334] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:02:27.382] Server  ERROR   ⨯ "upstream image response failed for" "https://images.unsplash.com/photo-1543204735-8913988f7b51?w=800&q=80" 404
+[00:02:27.868] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:02:32.484] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:02:36.396] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:03:13.457] Server  ERROR   ⨯ "upstream image response failed for" "https://images.unsplash.com/photo-1543204735-8913988f7b51?w=800&q=80" 404

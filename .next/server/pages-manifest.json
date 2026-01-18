@@ -1,0 +1,19 @@
+{
+  "/_app": "pages/_app.js",
+  "/api/admin/orders/list": "pages/api/admin/orders/list.js",
+  "/_error": "pages/_error.js",
+  "/api/admin/products/create": "pages/api/admin/products/create.js",
+  "/api/auth/csrf": "pages/api/auth/csrf.js",
+  "/api/auth/error": "pages/api/auth/error.js",
+  "/api/admin/products/list": "pages/api/admin/products/list.js",
+  "/api/auth/callback/credentials": "pages/api/auth/callback/credentials.js",
+  "/api/auth/providers": "pages/api/auth/providers.js",
+  "/api/auth/session": "pages/api/auth/session.js",
+  "/api/auth/register": "pages/api/auth/register.js",
+  "/api/auth/signin": "pages/api/auth/signin.js",
+  "/api/auth/signout": "pages/api/auth/signout.js",
+  "/api/orders/create": "pages/api/orders/create.js",
+  "/api/payment/create-order": "pages/api/payment/create-order.js",
+  "/_document": "pages/_document.js",
+  "/404": "pages/404.html"
+}
