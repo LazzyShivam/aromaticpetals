@@ -5,10 +5,14 @@ import Image from 'next/image'
 import { useCart } from '@/hooks/useCart'
 import { Trash2, Plus, Minus } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, totalPrice, clearCart } = useCart()
+  const { data: session, status } = useSession()
+  const { items, removeItem, updateQuantity, totalPrice, clearCart, mode, hydrating } = useCart()
   const [mounted, setMounted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [busyProductId, setBusyProductId] = useState<string | null>(null)
 
   // Prevent hydration mismatch
   useEffect(() => {
@@ -17,19 +21,65 @@ export default function CartPage() {
 
   if (!mounted) return null
 
+  const isCustomer = status === 'authenticated' && (session?.user as any)?.role !== 'admin'
+  const showDbBanner = mode === 'local' && status === 'unauthenticated'
+
   return (
     <div className="bg-white dark:bg-zinc-900 min-h-screen py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white mb-8">Shopping Cart</h1>
+        <div className="flex items-end justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Shopping cart</h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Review items and proceed to checkout.</p>
+          </div>
+          {items.length > 0 && (
+            <button
+              type="button"
+              onClick={async () => {
+                setError(null)
+                try {
+                  await clearCart()
+                } catch (e: any) {
+                  setError(e?.message || 'Failed to clear cart')
+                }
+              }}
+              className="text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+            >
+              Clear cart
+            </button>
+          )}
+        </div>
 
-        {items.length === 0 ? (
+        {showDbBanner && (
+          <div className="mb-6 rounded-md border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 flex items-center justify-between">
+            <span>Sign in to save your cart and sync across devices.</span>
+            <Link href="/auth/login?callbackUrl=/cart" className="text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium">
+              Sign in
+            </Link>
+          </div>
+        )}
+
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-700 dark:bg-zinc-800 dark:border-red-900/40 dark:text-red-300 rounded-md p-4 text-sm">
+            {error}
+          </div>
+        )}
+
+        {isCustomer && hydrating ? (
+          <div className="border rounded-lg border-gray-200 dark:border-zinc-800 p-6 animate-pulse">
+            <div className="h-4 w-48 bg-gray-200 dark:bg-zinc-700 rounded" />
+            <div className="mt-4 h-24 bg-gray-200 dark:bg-zinc-700 rounded" />
+            <div className="mt-4 h-24 bg-gray-200 dark:bg-zinc-700 rounded" />
+          </div>
+        ) : items.length === 0 ? (
           <div className="text-center py-12 border rounded-lg border-gray-200 dark:border-zinc-800">
-            <p className="text-lg text-gray-500 mb-6">Your cart is empty.</p>
+            <p className="text-lg text-gray-700 dark:text-gray-200 mb-2">Your cart is empty</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Browse products and add something you love.</p>
             <Link
               href="/products"
               className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white hover:bg-indigo-700"
             >
-              Continue Shopping
+              Browse products
             </Link>
           </div>
         ) : (
@@ -40,7 +90,7 @@ export default function CartPage() {
                   <li key={item.product_id} className="flex py-6 sm:py-10">
                     <div className="flex-shrink-0">
                       <Image
-                        src={item.product.image_url}
+                        src={item.product.image_url || 'https://images.unsplash.com/photo-1496062031456-07b8f162a322?w=800&q=80'}
                         alt={item.product.name}
                         width={96}
                         height={96}
@@ -53,7 +103,10 @@ export default function CartPage() {
                         <div>
                           <div className="flex justify-between">
                             <h3 className="text-sm">
-                              <Link href={`/product?id=${item.product_id}`} className="font-medium text-gray-700 dark:text-white hover:text-gray-800">
+                              <Link
+                                href={`/product?id=${item.product_id}`}
+                                className="font-medium text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white"
+                              >
                                 {item.product.name}
                               </Link>
                             </h3>
@@ -67,14 +120,36 @@ export default function CartPage() {
                         <div className="mt-4 sm:mt-0 sm:pr-9">
                           <div className="flex items-center space-x-3">
                             <button
-                              onClick={() => updateQuantity(item.product_id, Math.max(1, item.quantity - 1))}
+                              disabled={busyProductId === item.product_id}
+                              onClick={async () => {
+                                setBusyProductId(item.product_id)
+                                setError(null)
+                                try {
+                                  await updateQuantity(item.product_id, Math.max(1, item.quantity - 1))
+                                } catch (e: any) {
+                                  setError(e?.message || 'Failed to update cart')
+                                } finally {
+                                  setBusyProductId(null)
+                                }
+                              }}
                               className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-800"
                             >
                               <Minus className="h-4 w-4 text-gray-500" />
                             </button>
                             <span className="text-gray-900 dark:text-white">{item.quantity}</span>
                             <button
-                              onClick={() => updateQuantity(item.product_id, item.quantity + 1)}
+                              disabled={busyProductId === item.product_id}
+                              onClick={async () => {
+                                setBusyProductId(item.product_id)
+                                setError(null)
+                                try {
+                                  await updateQuantity(item.product_id, item.quantity + 1)
+                                } catch (e: any) {
+                                  setError(e?.message || 'Failed to update cart')
+                                } finally {
+                                  setBusyProductId(null)
+                                }
+                              }}
                               className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-800"
                             >
                               <Plus className="h-4 w-4 text-gray-500" />
@@ -84,8 +159,19 @@ export default function CartPage() {
                           <div className="absolute right-0 top-0">
                             <button
                               type="button"
-                              onClick={() => removeItem(item.product_id)}
-                              className="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500"
+                              disabled={busyProductId === item.product_id}
+                              onClick={async () => {
+                                setBusyProductId(item.product_id)
+                                setError(null)
+                                try {
+                                  await removeItem(item.product_id)
+                                } catch (e: any) {
+                                  setError(e?.message || 'Failed to remove item')
+                                } finally {
+                                  setBusyProductId(null)
+                                }
+                              }}
+                              className="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200"
                             >
                               <span className="sr-only">Remove</span>
                               <Trash2 className="h-5 w-5" />
@@ -99,7 +185,7 @@ export default function CartPage() {
               </ul>
             </div>
 
-            <div className="mt-16 rounded-lg bg-gray-50 dark:bg-zinc-800 px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8">
+            <div className="mt-10 rounded-lg bg-gray-50 dark:bg-zinc-800 px-4 py-6 sm:p-6 lg:col-span-5 lg:mt-0 lg:p-8">
               <h2 className="text-lg font-medium text-gray-900 dark:text-white">Order summary</h2>
 
               <dl className="mt-6 space-y-4">

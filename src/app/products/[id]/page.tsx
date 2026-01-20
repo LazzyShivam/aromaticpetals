@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { ShoppingCart, ArrowLeft } from 'lucide-react'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import AddToCartButton from '@/components/AddToCartButton'
+import ProductPurchase from '@/components/ProductPurchase'
 
 // Force dynamic since we're fetching data
 export const dynamic = 'force-dynamic'
@@ -91,9 +91,7 @@ export default async function ProductDetailsPage({
               </div>
             </div>
 
-            <div className="mt-10 flex">
-              <AddToCartButton product={product} />
-            </div>
+            <ProductPurchase product={product} />
           </div>
         </div>
       </div>

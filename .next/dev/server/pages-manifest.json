@@ -1,8 +1,10 @@
 {
   "/_app": "pages/_app.js",
-  "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
+  "/_error": "pages/_error.js",
   "/api/auth/session": "pages/api/auth/session.js",
-  "/api/admin/products/list": "pages/api/admin/products/list.js",
-  "/api/admin/orders/list": "pages/api/admin/orders/list.js"
+  "/api/cart/list": "pages/api/cart/list.js",
+  "/api/cart/add": "pages/api/cart/add.js",
+  "/api/coupons/eligible": "pages/api/coupons/eligible.js",
+  "/api/coupons/apply": "pages/api/coupons/apply.js"
 }

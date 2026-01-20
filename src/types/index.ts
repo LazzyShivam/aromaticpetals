@@ -25,3 +25,16 @@ export interface User {
   name: string
   role: 'customer' | 'admin'
 }
+
+export interface Coupon {
+  id?: string
+  code: string
+  description?: string | null
+  discount_type: 'percent' | 'amount'
+  discount_value: number
+  min_order_amount?: number
+  max_discount?: number | null
+  starts_at?: string | null
+  ends_at?: string | null
+  is_active?: boolean
+}

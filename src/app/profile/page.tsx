@@ -23,7 +23,26 @@ export default async function ProfilePage() {
   return (
     <div className="bg-white dark:bg-zinc-900 min-h-screen py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white mb-8">My Account</h1>
+        <div className="flex items-end justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">My account</h1>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Manage your profile and track your orders.</p>
+          </div>
+          <div className="flex gap-3">
+            <Link
+              href="/products"
+              className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+            >
+              Shop products
+            </Link>
+            <Link
+              href="/cart"
+              className="rounded-md border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-zinc-700"
+            >
+              View cart
+            </Link>
+          </div>
+        </div>
 
         <div className="bg-white dark:bg-zinc-800 shadow overflow-hidden sm:rounded-lg mb-8 border border-gray-200 dark:border-zinc-700">
           <div className="px-4 py-5 sm:px-6">
@@ -48,7 +67,12 @@ export default async function ProfilePage() {
           </div>
         </div>
 
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white mb-6">Order History</h2>
+        <div className="flex items-end justify-between gap-4 mb-6">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Order history</h2>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Your recent purchases, newest first.</p>
+          </div>
+        </div>
 
         {orders && orders.length > 0 ? (
           <div className="bg-white dark:bg-zinc-800 shadow overflow-hidden sm:rounded-md border border-gray-200 dark:border-zinc-700">
@@ -69,6 +93,16 @@ export default async function ProfilePage() {
                         <p className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                           Total: ₹{order.total_amount}
                         </p>
+                      {order.discount_amount > 0 && (
+                        <p className="flex items-center text-sm text-green-700 dark:text-green-400 sm:ml-4">
+                          Discount: -₹{order.discount_amount}
+                        </p>
+                      )}
+                      {order.coupon_code && (
+                        <p className="flex items-center text-sm text-gray-500 dark:text-gray-400 sm:ml-4">
+                          Coupon: {order.coupon_code}
+                        </p>
+                      )}
                       </div>
                       <div className="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-400 sm:mt-0">
                         <p>
@@ -82,7 +116,15 @@ export default async function ProfilePage() {
             </ul>
           </div>
         ) : (
-          <p className="text-gray-500 dark:text-gray-400">You haven't placed any orders yet.</p>
+          <div className="border border-gray-200 dark:border-zinc-700 rounded-lg p-8 bg-white dark:bg-zinc-800">
+            <p className="text-gray-900 dark:text-white font-medium">No orders yet</p>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">When you place an order, it will show up here.</p>
+            <div className="mt-4">
+              <Link href="/products" className="text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium">
+                Browse products
+              </Link>
+            </div>
+          </div>
         )}
       </div>
     </div>

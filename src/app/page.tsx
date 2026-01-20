@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import ProductCard from '@/components/ProductCard'
-import { Product } from '@/types'
+import { Coupon, Product } from '@/types'
 
 // Enable dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -21,8 +21,30 @@ async function getFeaturedProducts() {
   return data as Product[]
 }
 
+async function getActiveCoupons() {
+  const { data, error } = await supabase
+    .from('coupons')
+    .select('code, description, discount_type, discount_value, min_order_amount, max_discount, starts_at, ends_at, is_active')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+    .limit(6)
+
+  if (error) {
+    console.error('Error fetching coupons:', error)
+    return []
+  }
+
+  const now = new Date()
+  return (data as unknown as Coupon[]).filter((c) => {
+    if (c.starts_at && now < new Date(c.starts_at)) return false
+    if (c.ends_at && now > new Date(c.ends_at)) return false
+    return true
+  })
+}
+
 export default async function Home() {
   const featuredProducts = await getFeaturedProducts()
+  const coupons = await getActiveCoupons()
 
   return (
     <main className="flex min-h-screen flex-col">
@@ -52,6 +74,49 @@ export default async function Home() {
           </div>
         </div>
       </div>
+
+      {coupons.length > 0 && (
+        <div className="bg-white dark:bg-zinc-900 py-12">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex items-end justify-between gap-6 mb-6">
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Discounts & coupons</h2>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Apply a coupon at checkout to save.</p>
+              </div>
+              <Link href="/products" className="text-indigo-600 font-medium hover:text-indigo-500">
+                Shop now
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {coupons.slice(0, 3).map((c) => {
+                const headline = c.discount_type === 'percent' ? `${c.discount_value}% OFF` : `₹${c.discount_value} OFF`
+                return (
+                  <div
+                    key={c.code}
+                    className="rounded-lg border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800 p-5"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Coupon code</p>
+                        <p className="mt-1 text-lg font-semibold text-gray-900 dark:text-white">{c.code}</p>
+                      </div>
+                      <span className="inline-flex items-center rounded-full bg-indigo-600 text-white text-xs font-semibold px-3 py-1">
+                        {headline}
+                      </span>
+                    </div>
+                    {c.description && <p className="mt-3 text-sm text-gray-700 dark:text-gray-300">{c.description}</p>}
+                    <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+                      {typeof c.min_order_amount === 'number' && c.min_order_amount > 0 ? `Min order ₹${c.min_order_amount}. ` : ''}
+                      {c.max_discount ? `Max discount ₹${c.max_discount}.` : ''}
+                    </p>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Featured Products */}
       <div className="bg-white dark:bg-zinc-900 py-16">

@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 export const dynamic = 'force-dynamic'
 
 type NewProductForm = {
+  id?: string
   name: string
   description: string
   category: string
@@ -18,12 +19,19 @@ type NewProductForm = {
 
 export default function AdminProductsPage() {
   const categories = useMemo(() => ['Flowers', 'Plants', 'Gifts', 'Uncategorized'], [])
+  const inputClass =
+    'mt-1 block w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'
+  const selectClass =
+    'mt-1 block w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'
+  const textareaClass =
+    'mt-1 block w-full rounded-md border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [form, setForm] = useState<NewProductForm>({
+    id: undefined,
     name: '',
     description: '',
     category: 'Flowers',
@@ -32,6 +40,8 @@ export default function AdminProductsPage() {
     image_url: '',
     is_active: true,
   })
+
+  const isEditing = !!form.id
 
   const loadProducts = useCallback(async () => {
     setLoading(true)
@@ -58,15 +68,16 @@ export default function AdminProductsPage() {
     void loadProducts()
   }, [loadProducts])
 
-  async function onCreateProduct(e: React.FormEvent) {
+  async function onSubmitProduct(e: React.FormEvent) {
     e.preventDefault()
     setSubmitting(true)
     setError(null)
     try {
-      const res = await fetch('/api/admin/products/create', {
+      const res = await fetch(isEditing ? '/api/admin/products/update' : '/api/admin/products/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          id: form.id,
           name: form.name,
           description: form.description,
           category: form.category,
@@ -78,10 +89,11 @@ export default function AdminProductsPage() {
       })
       const data = await res.json().catch(() => null)
       if (!res.ok) {
-        throw new Error(data?.error || 'Failed to create product')
+        throw new Error(data?.error || (isEditing ? 'Failed to update product' : 'Failed to create product'))
       }
       setShowForm(false)
       setForm({
+        id: undefined,
         name: '',
         description: '',
         category: 'Flowers',
@@ -92,10 +104,46 @@ export default function AdminProductsPage() {
       })
       await loadProducts()
     } catch (e: any) {
-      setError(e?.message || 'Failed to create product')
+      setError(e?.message || (isEditing ? 'Failed to update product' : 'Failed to create product'))
     } finally {
       setSubmitting(false)
     }
+  }
+
+  async function onDeleteProduct(productId: string) {
+    const ok = window.confirm('Delete this product? This cannot be undone.')
+    if (!ok) return
+
+    setError(null)
+    try {
+      const res = await fetch('/api/admin/products/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: productId }),
+      })
+      const data = await res.json().catch(() => null)
+      if (!res.ok) {
+        throw new Error(data?.error || 'Failed to delete product')
+      }
+      await loadProducts()
+    } catch (e: any) {
+      setError(e?.message || 'Failed to delete product')
+    }
+  }
+
+  function onEditProduct(product: Product) {
+    setShowForm(true)
+    setError(null)
+    setForm({
+      id: product.id,
+      name: product.name || '',
+      description: product.description || '',
+      category: product.category || 'Uncategorized',
+      price: String(product.price ?? ''),
+      stock_quantity: String(product.stock_quantity ?? ''),
+      image_url: product.image_url || '',
+      is_active: !!product.is_active,
+    })
   }
 
   return (
@@ -104,23 +152,48 @@ export default function AdminProductsPage() {
         <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">Products</h1>
         <button
           type="button"
-          onClick={() => setShowForm((v) => !v)}
+          onClick={() => {
+            if (showForm) {
+              setShowForm(false)
+              setForm({
+                id: undefined,
+                name: '',
+                description: '',
+                category: 'Flowers',
+                price: '',
+                stock_quantity: '',
+                image_url: '',
+                is_active: true,
+              })
+            } else {
+              setShowForm(true)
+            }
+          }}
           className="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700"
         >
-          Add Product
+          {showForm ? 'Close' : 'Add Product'}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={onCreateProduct} className="mb-6 bg-white dark:bg-zinc-800 shadow-sm rounded-lg p-6">
+        <form onSubmit={onSubmitProduct} className="mb-6 bg-white dark:bg-zinc-800 shadow-sm rounded-lg p-6">
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div>
+              <h2 className="text-base font-semibold text-gray-900 dark:text-white">{isEditing ? 'Edit product' : 'New product'}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{isEditing ? 'Update details and save changes.' : 'Create a new product for your store.'}</p>
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
               <input
+                type="text"
                 value={form.name}
                 onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+                className={inputClass}
+                placeholder="Product name"
                 required
+                disabled={submitting}
               />
             </div>
             <div>
@@ -128,7 +201,8 @@ export default function AdminProductsPage() {
               <select
                 value={form.category}
                 onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))}
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+                className={selectClass}
+                disabled={submitting}
               >
                 {categories.map((c) => (
                   <option key={c} value={c}>
@@ -140,29 +214,42 @@ export default function AdminProductsPage() {
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Price</label>
               <input
+                type="number"
                 inputMode="decimal"
+                min={0}
+                step="0.01"
                 value={form.price}
                 onChange={(e) => setForm((p) => ({ ...p, price: e.target.value }))}
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+                className={inputClass}
+                placeholder="0.00"
                 required
+                disabled={submitting}
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Quantity</label>
               <input
+                type="number"
                 inputMode="numeric"
+                min={0}
+                step={1}
                 value={form.stock_quantity}
                 onChange={(e) => setForm((p) => ({ ...p, stock_quantity: e.target.value }))}
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+                className={inputClass}
+                placeholder="0"
                 required
+                disabled={submitting}
               />
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Image URL</label>
               <input
+                type="url"
                 value={form.image_url}
                 onChange={(e) => setForm((p) => ({ ...p, image_url: e.target.value }))}
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+                className={inputClass}
+                placeholder="https://..."
+                disabled={submitting}
               />
             </div>
             <div className="md:col-span-2">
@@ -170,8 +257,10 @@ export default function AdminProductsPage() {
               <textarea
                 value={form.description}
                 onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+                className={textareaClass}
                 rows={3}
+                placeholder="Optional description"
+                disabled={submitting}
               />
             </div>
             <div className="md:col-span-2 flex items-center gap-2">
@@ -181,6 +270,7 @@ export default function AdminProductsPage() {
                 checked={form.is_active}
                 onChange={(e) => setForm((p) => ({ ...p, is_active: e.target.checked }))}
                 className="h-4 w-4 rounded border-gray-300"
+              disabled={submitting}
               />
               <label htmlFor="is_active" className="text-sm text-gray-700 dark:text-gray-300">
                 Active
@@ -191,8 +281,21 @@ export default function AdminProductsPage() {
           <div className="mt-4 flex items-center justify-end gap-3">
             <button
               type="button"
-              onClick={() => setShowForm(false)}
-              className="px-4 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-zinc-700"
+              onClick={() => {
+                setShowForm(false)
+                setForm({
+                  id: undefined,
+                  name: '',
+                  description: '',
+                  category: 'Flowers',
+                  price: '',
+                  stock_quantity: '',
+                  image_url: '',
+                  is_active: true,
+                })
+              }}
+              className="px-4 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-700"
+              disabled={submitting}
             >
               Cancel
             </button>
@@ -201,7 +304,7 @@ export default function AdminProductsPage() {
               disabled={submitting}
               className="bg-indigo-600 disabled:opacity-60 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700"
             >
-              {submitting ? 'Creating…' : 'Create'}
+              {submitting ? (isEditing ? 'Saving…' : 'Creating…') : isEditing ? 'Save changes' : 'Create product'}
             </button>
           </div>
         </form>
@@ -222,7 +325,7 @@ export default function AdminProductsPage() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Price</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stock</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 relative"><span className="sr-only">Edit</span></th>
+              <th className="px-6 py-3 relative"><span className="sr-only">Actions</span></th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-zinc-800 divide-y divide-gray-200 dark:divide-zinc-700">
@@ -264,12 +367,28 @@ export default function AdminProductsPage() {
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <Link
-                    href={`/product?id=${product.id}`}
-                    className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
-                  >
-                    View
-                  </Link>
+                  <div className="flex justify-end gap-3">
+                    <button
+                      type="button"
+                      onClick={() => onEditProduct(product)}
+                      className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onDeleteProduct(product.id)}
+                      className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                    >
+                      Delete
+                    </button>
+                    <Link
+                      href={`/product?id=${product.id}`}
+                      className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                    >
+                      Preview
+                    </Link>
+                  </div>
                 </td>
               </tr>
               ))

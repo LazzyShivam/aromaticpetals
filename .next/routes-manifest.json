@@ -50,6 +50,12 @@
       "namedRegex": "^/admin(?:/)?$"
     },
     {
+      "page": "/admin/coupons",
+      "regex": "^/admin/coupons(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/coupons(?:/)?$"
+    },
+    {
       "page": "/admin/orders",
       "regex": "^/admin/orders(?:/)?$",
       "routeKeys": {},
@@ -60,6 +66,30 @@
       "regex": "^/admin/products(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/admin/products(?:/)?$"
+    },
+    {
+      "page": "/api/admin/coupons/delete",
+      "regex": "^/api/admin/coupons/delete(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/coupons/delete(?:/)?$"
+    },
+    {
+      "page": "/api/admin/coupons/list",
+      "regex": "^/api/admin/coupons/list(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/coupons/list(?:/)?$"
+    },
+    {
+      "page": "/api/admin/coupons/upsert",
+      "regex": "^/api/admin/coupons/upsert(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/coupons/upsert(?:/)?$"
+    },
+    {
+      "page": "/api/admin/dashboard/summary",
+      "regex": "^/api/admin/dashboard/summary(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/dashboard/summary(?:/)?$"
     },
     {
       "page": "/api/admin/orders/list",
@@ -74,10 +104,22 @@
       "namedRegex": "^/api/admin/products/create(?:/)?$"
     },
     {
+      "page": "/api/admin/products/delete",
+      "regex": "^/api/admin/products/delete(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/products/delete(?:/)?$"
+    },
+    {
       "page": "/api/admin/products/list",
       "regex": "^/api/admin/products/list(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/admin/products/list(?:/)?$"
+    },
+    {
+      "page": "/api/admin/products/update",
+      "regex": "^/api/admin/products/update(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/products/update(?:/)?$"
     },
     {
       "page": "/api/auth/callback/credentials",
@@ -126,6 +168,48 @@
       "regex": "^/api/auth/signout(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/auth/signout(?:/)?$"
+    },
+    {
+      "page": "/api/cart/add",
+      "regex": "^/api/cart/add(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/cart/add(?:/)?$"
+    },
+    {
+      "page": "/api/cart/clear",
+      "regex": "^/api/cart/clear(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/cart/clear(?:/)?$"
+    },
+    {
+      "page": "/api/cart/list",
+      "regex": "^/api/cart/list(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/cart/list(?:/)?$"
+    },
+    {
+      "page": "/api/cart/remove",
+      "regex": "^/api/cart/remove(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/cart/remove(?:/)?$"
+    },
+    {
+      "page": "/api/cart/update",
+      "regex": "^/api/cart/update(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/cart/update(?:/)?$"
+    },
+    {
+      "page": "/api/coupons/apply",
+      "regex": "^/api/coupons/apply(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/coupons/apply(?:/)?$"
+    },
+    {
+      "page": "/api/coupons/eligible",
+      "regex": "^/api/coupons/eligible(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/coupons/eligible(?:/)?$"
     },
     {
       "page": "/api/orders/create",

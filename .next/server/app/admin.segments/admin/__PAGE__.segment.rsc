@@ -1,5 +1,9 @@
 1:"$Sreact.fragment"
-2:I[484,[],"OutletBoundary"]
-3:"$Sreact.suspense"
-0:{"buildId":"VxXyPnjukZCdZ_gC512MA","rsc":["$","$1","c",{"children":[["$","div",null,{"children":[["$","h1",null,{"className":"text-2xl font-semibold text-gray-900 dark:text-white","children":"Dashboard"}],["$","p",null,{"className":"mt-4 text-gray-600 dark:text-gray-400","children":"Welcome to the admin dashboard. Select a section from the sidebar to manage your store."}]]}],null,["$","$L2",null,{"children":["$","$3",null,{"name":"Next.MetadataOutlet","children":"$@4"}]}]]}],"loading":null,"isPartial":false}
-4:null
+2:I[1304,[],"ClientPageRoot"]
+3:I[7170,["500","static/chunks/500-5d45efbf86b8d36e.js","698","static/chunks/app/admin/page-8c1f5a5aaba9e86b.js"],"default"]
+6:I[484,[],"OutletBoundary"]
+7:"$Sreact.suspense"
+0:{"buildId":"2eI10e1qZJbrO9UNINmpI","rsc":["$","$1","c",{"children":[["$","$L2",null,{"Component":"$3","serverProvidedParams":{"searchParams":{},"params":{},"promises":["$@4","$@5"]}}],null,["$","$L6",null,{"children":["$","$7",null,{"name":"Next.MetadataOutlet","children":"$@8"}]}]]}],"loading":null,"isPartial":false}
+4:{}
+5:{}
+8:null

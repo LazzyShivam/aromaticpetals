@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useEffect } from 'react'
-import { LayoutDashboard, Package, ShoppingBag } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingBag, Tag } from 'lucide-react'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
@@ -39,6 +39,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/admin/orders" className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-md">
             <ShoppingBag className="mr-3 h-5 w-5" />
             Orders
+          </Link>
+          <Link href="/admin/coupons" className="flex items-center px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-md">
+            <Tag className="mr-3 h-5 w-5" />
+            Coupons
           </Link>
         </nav>
       </aside>
