@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import { Product } from '@/types'
+import { Product, ProductMedia } from '@/types'
 import Link from 'next/link'
 import { ShoppingCart, ArrowLeft } from 'lucide-react'
 import Image from 'next/image'
@@ -27,6 +27,17 @@ async function getProduct(id: string) {
   return data as Product
 }
 
+async function getProductMedia(productId: string) {
+  if (!productId) return [] as ProductMedia[]
+  const { data } = await supabase
+    .from('product_media')
+    .select('*')
+    .eq('product_id', productId)
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true })
+  return (data ?? []) as unknown as ProductMedia[]
+}
+
 type PageParams = { id?: string; nxtPid?: string }
 
 export default async function ProductDetailsPage({
@@ -37,10 +48,15 @@ export default async function ProductDetailsPage({
   const resolvedParams = await params
   const id = resolvedParams.id || resolvedParams.nxtPid || ''
   const product = await getProduct(id)
+  const media = await getProductMedia(id)
 
   if (!product) {
     notFound()
   }
+
+  const images = media.filter((m) => m.media_type === 'image')
+  const videos = media.filter((m) => m.media_type === 'video')
+  const heroImage = images[0]?.public_url || product.image_url || 'https://images.unsplash.com/photo-1496062031456-07b8f162a322?w=1600&q=80'
 
   return (
     <div className="bg-white dark:bg-zinc-900 min-h-screen py-12">
@@ -57,13 +73,34 @@ export default async function ProductDetailsPage({
           <div className="flex flex-col-reverse">
             <div className="w-full aspect-w-1 aspect-h-1 bg-gray-100 rounded-lg overflow-hidden sm:aspect-w-2 sm:aspect-h-3">
               <Image
-                src={product.image_url || 'https://images.unsplash.com/photo-1496062031456-07b8f162a322?w=1600&q=80'}
+                src={heroImage}
                 alt={product.name}
                 width={800}
                 height={800}
                 className="w-full h-full object-center object-cover"
               />
             </div>
+
+            {images.length > 1 && (
+              <div className="mt-4 grid grid-cols-4 gap-3">
+                {images.slice(0, 8).map((img) => (
+                  <div key={img.id} className="aspect-square rounded-md overflow-hidden bg-gray-100">
+                    <Image src={img.public_url} alt="" width={200} height={200} className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {videos.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-sm font-medium text-gray-900 dark:text-white">Videos</h3>
+                <div className="mt-3 space-y-3">
+                  {videos.slice(0, 3).map((v) => (
+                    <video key={v.id} src={v.public_url} controls className="w-full rounded-lg border border-gray-200 dark:border-zinc-700" />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Product info */}

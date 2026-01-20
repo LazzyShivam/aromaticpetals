@@ -50,6 +50,10 @@ self.__SERVER_FILES_MANIFEST={
         {
           "protocol": "https",
           "hostname": "images.unsplash.com"
+        },
+        {
+          "protocol": "https",
+          "hostname": "kedjdwmxhrraztmdrgfo.supabase.co"
         }
       ],
       "qualities": [

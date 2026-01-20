@@ -116,6 +116,30 @@
       "namedRegex": "^/api/admin/products/list(?:/)?$"
     },
     {
+      "page": "/api/admin/products/media/commit",
+      "regex": "^/api/admin/products/media/commit(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/products/media/commit(?:/)?$"
+    },
+    {
+      "page": "/api/admin/products/media/create-signed-upload",
+      "regex": "^/api/admin/products/media/create\\-signed\\-upload(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/products/media/create\\-signed\\-upload(?:/)?$"
+    },
+    {
+      "page": "/api/admin/products/media/delete",
+      "regex": "^/api/admin/products/media/delete(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/products/media/delete(?:/)?$"
+    },
+    {
+      "page": "/api/admin/products/media/list",
+      "regex": "^/api/admin/products/media/list(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/products/media/list(?:/)?$"
+    },
+    {
       "page": "/api/admin/products/update",
       "regex": "^/api/admin/products/update(?:/)?$",
       "routeKeys": {},

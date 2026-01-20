@@ -38,3 +38,26 @@ export interface Coupon {
   ends_at?: string | null
   is_active?: boolean
 }
+
+export interface ProductMedia {
+  id: string
+  product_id: string
+  media_type: 'image' | 'video'
+  storage_path: string
+  public_url: string
+  sort_order: number
+  created_at: string
+}
+
+export interface Coupon {
+  id?: string
+  code: string
+  description?: string | null
+  discount_type: 'percent' | 'amount'
+  discount_value: number
+  min_order_amount?: number
+  max_discount?: number | null
+  starts_at?: string | null
+  ends_at?: string | null
+  is_active?: boolean
+}
