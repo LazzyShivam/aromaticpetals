@@ -248,6 +248,12 @@
       "namedRegex": "^/api/payment/create\\-order(?:/)?$"
     },
     {
+      "page": "/api/payment/webhook",
+      "regex": "^/api/payment/webhook(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/payment/webhook(?:/)?$"
+    },
+    {
       "page": "/auth/login",
       "regex": "^/auth/login(?:/)?$",
       "routeKeys": {},
@@ -270,6 +276,12 @@
       "regex": "^/checkout(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/checkout(?:/)?$"
+    },
+    {
+      "page": "/checkout/confirmation",
+      "regex": "^/checkout/confirmation(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/checkout/confirmation(?:/)?$"
     },
     {
       "page": "/product",

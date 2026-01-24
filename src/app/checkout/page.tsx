@@ -124,6 +124,8 @@ export default function CheckoutPage() {
               body: JSON.stringify({
                 shipping_address: shippingAddress,
                 payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
                 coupon_code: couponCode,
               })
             })
@@ -134,8 +136,10 @@ export default function CheckoutPage() {
               throw new Error(typeof orderErr === 'string' ? orderErr : orderErr.error || 'Failed to create order')
             }
 
+            const orderBody = await orderRes.json().catch(() => null)
             await clearCart()
-            router.push('/profile')
+            const orderId = orderBody?.order?.id
+            router.push(orderId ? `/checkout/confirmation?order_id=${encodeURIComponent(orderId)}` : '/profile')
           } catch (err) {
             console.error(err)
             alert('Payment successful but failed to create order record. Please contact support.')

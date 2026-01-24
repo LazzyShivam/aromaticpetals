@@ -1,16 +1,17 @@
 {
   "/_not-found/page": "/_not-found",
+  "/cart/page": "/cart",
+  "/checkout/page": "/checkout",
   "/auth/login/page": "/auth/login",
   "/auth/register/page": "/auth/register",
-  "/checkout/page": "/checkout",
-  "/cart/page": "/cart",
+  "/checkout/confirmation/page": "/checkout/confirmation",
+  "/product/page": "/product",
   "/products/page": "/products",
+  "/page": "/",
   "/products/[id]/page": "/products/[id]",
   "/profile/page": "/profile",
-  "/page": "/",
-  "/product/page": "/product",
-  "/admin/coupons/page": "/admin/coupons",
-  "/admin/orders/page": "/admin/orders",
   "/admin/page": "/admin",
-  "/admin/products/page": "/admin/products"
+  "/admin/orders/page": "/admin/orders",
+  "/admin/products/page": "/admin/products",
+  "/admin/coupons/page": "/admin/coupons"
 }

@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { computeCartSubtotal, getCartRowsForUser } from '@/lib/cartTotals'
 import { computeDiscountAmount, getCouponByCode, validateCouponForSubtotal } from '@/lib/coupons'
+import crypto from 'node:crypto'
+import Razorpay from 'razorpay'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -24,6 +26,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const userId = (session.user as any).id as string
     const shippingAddress = req.body?.shipping_address
     const paymentId = typeof req.body?.payment_id === 'string' ? req.body.payment_id : null
+    const razorpayOrderId = typeof req.body?.razorpay_order_id === 'string' ? req.body.razorpay_order_id : null
+    const razorpaySignature = typeof req.body?.razorpay_signature === 'string' ? req.body.razorpay_signature : null
     const couponCode = typeof req.body?.coupon_code === 'string' ? req.body.coupon_code : ''
 
     if (!userId || !shippingAddress) {
@@ -64,6 +68,48 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Invalid amount' })
     }
 
+    if (!paymentId || !razorpayOrderId || !razorpaySignature) {
+      return res.status(400).json({ error: 'Missing Razorpay payment details' })
+    }
+
+    const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET
+    const razorpayKeyId = process.env.RAZORPAY_KEY_ID
+    if (!razorpayKeyId || !razorpayKeySecret) {
+      return res.status(500).json({ error: 'Razorpay is not configured' })
+    }
+
+    const signatureBody = `${razorpayOrderId}|${paymentId}`
+    const expectedSignature = crypto.createHmac('sha256', razorpayKeySecret).update(signatureBody).digest('hex')
+    if (expectedSignature !== razorpaySignature) {
+      return res.status(400).json({ error: 'Invalid payment signature' })
+    }
+
+    const expectedPaise = Math.round(totalAmount * 100)
+    const razorpay = new Razorpay({ key_id: razorpayKeyId, key_secret: razorpayKeySecret })
+
+    let paymentStatus: string | null = null
+    let paymentCurrency: string | null = null
+    let paymentAmountPaise: number | null = null
+    let paymentCapturedAt: string | null = null
+
+    try {
+      const payment = (await razorpay.payments.fetch(paymentId)) as any
+      if (payment?.order_id && payment.order_id !== razorpayOrderId) {
+        return res.status(400).json({ error: 'Payment does not match order' })
+      }
+      if (typeof payment?.amount === 'number') paymentAmountPaise = payment.amount
+      if (typeof payment?.currency === 'string') paymentCurrency = payment.currency
+      if (typeof payment?.status === 'string') paymentStatus = payment.status
+      if (paymentAmountPaise !== null && paymentAmountPaise !== expectedPaise) {
+        return res.status(400).json({ error: 'Payment amount mismatch' })
+      }
+      if (paymentStatus === 'captured') {
+        paymentCapturedAt = new Date().toISOString()
+      }
+    } catch {
+      paymentStatus = 'authorized'
+    }
+
     const { data: order, error: orderError } = await supabaseAdmin
       .from('orders')
       .insert({
@@ -74,9 +120,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         coupon_code: couponCodeNormalized,
         coupon_id: couponId,
         total_amount: totalAmount,
-        status: 'confirmed',
+        status: paymentStatus === 'captured' ? 'confirmed' : 'pending',
         shipping_address: shippingAddress,
         payment_id: paymentId,
+        payment_provider: 'razorpay',
+        payment_status: paymentStatus,
+        payment_currency: paymentCurrency,
+        payment_amount_paise: expectedPaise,
+        payment_captured_at: paymentCapturedAt,
+        razorpay_order_id: razorpayOrderId,
+        razorpay_payment_id: paymentId,
+        razorpay_signature: razorpaySignature,
       })
       .select()
       .single()

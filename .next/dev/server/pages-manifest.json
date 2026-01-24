@@ -2,11 +2,5 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/api/auth/session": "pages/api/auth/session.js",
-  "/api/admin/products/create": "pages/api/admin/products/create.js",
-  "/api/admin/products/media/create-signed-upload": "pages/api/admin/products/media/create-signed-upload.js",
-  "/api/admin/products/list": "pages/api/admin/products/list.js",
-  "/api/admin/products/media/commit": "pages/api/admin/products/media/commit.js",
-  "/api/admin/dashboard/summary": "pages/api/admin/dashboard/summary.js",
-  "/api/cart/list": "pages/api/cart/list.js"
+  "/api/auth/session": "pages/api/auth/session.js"
 }
